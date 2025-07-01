@@ -15,7 +15,7 @@ func Init(cfg config.DatabaseConfig) *sqlx.DB {
 		cfg.Port,
 		cfg.User,
 		cfg.Password,
-		cfg.Name,
+		cfg.Name,      
 		cfg.SSLMode,
 	)
 

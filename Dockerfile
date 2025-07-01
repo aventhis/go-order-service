@@ -15,8 +15,9 @@ FROM alpine:latest
 
 WORKDIR /app
 
-# Копируем только бинарник
+# Копируем только бинарник и миграции
 COPY --from=builder /app/server .
+COPY --from=builder /app/migrations ./migrations
 
 EXPOSE 8081
 

@@ -13,8 +13,8 @@ services:
         #        «Запусти мой сервис (app) только после того,
         #  как сервис postgres станет healthy, т.е. пройдет healthcheck.»
         condition: service_healthy
-      kafka:
-        condition: service_started
+      # kafka:
+      #   condition: service_started
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
@@ -41,7 +41,7 @@ services:
     #   healthcheck Это позволит app дождаться, пока база готова принимать соединения
     #  — а не просто запущена.
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${DB_USER}" ]
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
       interval: 5s
       timeout: 3s
       retries: 5

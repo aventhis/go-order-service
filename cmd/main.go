@@ -16,6 +16,9 @@ func main() {
 	database := db.Init(cfg.Database)
 	defer database.Close()
 
+	// Применяем миграции
+    db.RunMigrations(database, "migrations")
+
 	fmt.Println("App running on port:", cfg.Server.Port)
 	fmt.Println("Connected to DB:", cfg.Database.Host, cfg.Database.Port)
 	fmt.Println("Kafka brokers:", cfg.Kafka.Brokers)
