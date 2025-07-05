@@ -1,9 +1,11 @@
 package service
 
 import (
-    "sync"
+    "github.com/aventhis/go-order-service/internal/config"
     "github.com/aventhis/go-order-service/internal/model"
     "github.com/aventhis/go-order-service/internal/repository"
+    "log"
+    "sync"
 )
 
 type OrderService struct {
@@ -45,4 +47,34 @@ func (s *OrderService) GetByID(orderUID string) (*model.Order, error) {
     s.mu.Unlock()
 
     return order, nil
+}
+
+// Create сохраняет заказ в БД и кэш
+func (s *OrderService) Create(order *model.Order) error {
+    if err := s.repo.Create(order); err != nil {
+        return err
+    }
+
+    s.mu.Lock()
+    s.cache[order.OrderUID] = order
+    s.mu.Unlock()
+
+    return nil
+}
+
+// RestoreCache восстанавливает кэш из БД при старте
+func (s *OrderService) RestoreCache() error {
+    orders, err := s.repo.GetAll() 
+    if err != nil {
+        return err
+    }
+
+    s.mu.Lock()
+    for _, order := range orders {
+        s.cache[order.OrderUID] = order
+    }
+    s.mu.Unlock()
+
+    log.Printf("Restored %d orders to cache", len(orders))
+    return nil
 }

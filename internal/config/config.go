@@ -65,7 +65,6 @@ func LoadConfig() (*Config, error) {
 		Kafka: KafkaConfig{
 			Brokers: getEnv("KAFKA_BROKERS", "kafka:9092"),
 			Topic:   getEnv("KAFKA_TOPIC", "orders"),
-    		GroupID: getEnv("KAFKA_GROUP_ID", "order_service"),
 		},
 	}
 

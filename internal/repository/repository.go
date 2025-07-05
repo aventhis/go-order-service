@@ -2,11 +2,13 @@ package repository
 
 import (
 	"github.com/aventhis/go-order-service/internal/model"
+	"github.com/jmoiron/sqlx"
 )
 
 type OrderRepository interface {
 	Create(order *model.Order) error
 	GetByID(orderUID string) (*model.Order, error)
+	GetAll() ([]*model.Order, error)
 }
 
 type OrderRepo struct {
@@ -118,4 +120,25 @@ func (r *OrderRepo) GetByID(orderUID string) (*model.Order, error) {
   }
 
   return order, nil
+}
+
+func (r *OrderRepo) GetAll() ([]*model.Order, error) {
+    // Получаем все order_uid
+    var orderUIDs []string
+    err := r.db.Select(&orderUIDs, `SELECT order_uid FROM orders`)
+    if err != nil {
+        return nil, err
+    }
+
+    // Получаем полную информацию для каждого заказа
+    orders := make([]*model.Order, 0, len(orderUIDs))
+    for _, uid := range orderUIDs {
+        order, err := r.GetByID(uid)
+        if err != nil {
+            return nil, err
+        }
+        orders = append(orders, order)
+    }
+
+    return orders, nil
 }
