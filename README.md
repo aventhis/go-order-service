@@ -13,7 +13,7 @@
 ### 1. Клонируйте репозиторий
 
 ```bash
-git clone <URL_ВАШЕГО_РЕПОЗИТОРИЯ>
+git clone git@github.com:aventhis/go-order-service.git
 cd go-order-service
 ```
 
