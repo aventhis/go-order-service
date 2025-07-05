@@ -10,6 +10,12 @@
 
 ## Быстрый старт
 
+## ⚙️ Настройка переменных окружения
+
+1. Скопируйте `.env.example` в `.env`:
+```bash
+cp .env.example .env
+
 ### 1. Клонируйте репозиторий
 
 ```bash
@@ -109,12 +115,4 @@ docker compose down -v
 
 ---
 
-## Автор
 
-- [Ваше имя или ник](https://github.com/ВАШ_GITHUB)
-
-## ⚙️ Настройка переменных окружения
-
-1. Скопируйте `.env.example` в `.env`:
-```bash
-cp .env.example .env
