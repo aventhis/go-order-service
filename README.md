@@ -42,46 +42,27 @@ docker compose ps
 
 ## Проверка работы
 
-### 1. Проверить, что заказы поступают в базу
-
-```bash
-docker exec -it go-order-service-db-1 psql -U postgres -d orders -c "SELECT COUNT(*) FROM orders;"
-```
-
-### 2. Посмотреть последние заказы
-
-```bash
-docker exec -it go-order-service-db-1 psql -U postgres -d orders -c "SELECT order_uid, track_number, date_created FROM orders ORDER BY date_created DESC LIMIT 5;"
-```
-
-### 3. Получить заказ через HTTP API
+### 1. Получить заказ через HTTP API
 
 ```bash
 curl -X GET http://localhost:8081/order/<order_uid>
 ```
 _Подставьте реальный order_uid из предыдущего шага._
 
-### 4. Проверить работу кеша
-
-```bash
-time curl -X GET http://localhost:8081/order/<order_uid>
-time curl -X GET http://localhost:8081/order/<order_uid>
-```
-
-### 5. Проверить обработку несуществующего заказа
+### 2. Проверить обработку несуществующего заказа
 
 ```bash
 curl -X GET http://localhost:8081/order/does-not-exist
 ```
 
-### 6. Перезапустить сервис и убедиться, что кеш восстанавливается
+### 3. Перезапустить сервис и убедиться, что кеш восстанавливается
 
 ```bash
 docker compose restart order-service
 curl -X GET http://localhost:8081/order/<order_uid>
 ```
 
-### 7. Открыть веб-интерфейс
+### 4. Открыть веб-интерфейс
 
 Перейдите в браузере по адресу:  
 [http://localhost:8081](http://localhost:8081)
