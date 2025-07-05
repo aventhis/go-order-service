@@ -15,7 +15,7 @@ func Init(cfg config.DatabaseConfig) *sqlx.DB {
 		cfg.Port,
 		cfg.User,
 		cfg.Password,
-		cfg.Name,      
+		cfg.Name,
 		cfg.SSLMode,
 	)
 
@@ -30,4 +30,10 @@ func Init(cfg config.DatabaseConfig) *sqlx.DB {
 
 	log.Println("Connected to database")
 	return db
+}
+
+func Close(db *sqlx.DB) {
+    if err := db.Close(); err != nil {
+        log.Printf("Error closing database connection: %v", err)
+    }
 }

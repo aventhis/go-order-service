@@ -15,11 +15,11 @@ type Order struct {
 	Shardkey          string    `json:"shardkey"`
 	SmId              int       `json:"sm_id"`
 	DateCreated       time.Time `json:"date_created"`
-	OofShard          string    `json:"OofShard"`
+	OofShard          string    `json:"oof_shard"`
 
 	Delivery Delivery `json:"delivery"`
 	Payment  Payment  `json:"payment"`
-	Items    []Items  `json:"items"`
+	Items    []Item  `json:"items"`
 }
 
 type Delivery struct {
@@ -45,7 +45,7 @@ type Payment struct {
 	CustomFee    int    `json:"custom_fee"`
 }
 
-type Items struct {
+type Item struct {
 	ChrtID      int    `json:"chrt_id"`
 	TrackNumber string `json:"track_number"`
 	Price       int    `json:"price"`

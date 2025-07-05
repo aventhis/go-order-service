@@ -30,6 +30,8 @@ type ServerConfig struct {
 
 type KafkaConfig struct {
 	Brokers string
+	Topic    string
+    GroupID  string
 }
 
 func LoadConfig() (*Config, error) {
@@ -62,6 +64,8 @@ func LoadConfig() (*Config, error) {
 		},
 		Kafka: KafkaConfig{
 			Brokers: getEnv("KAFKA_BROKERS", "kafka:9092"),
+			Topic:   getEnv("KAFKA_TOPIC", "orders"),
+    		GroupID: getEnv("KAFKA_GROUP_ID", "order_service"),
 		},
 	}
 
