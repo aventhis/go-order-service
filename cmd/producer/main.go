@@ -13,8 +13,9 @@ import (
 
 // Генерация заказа с одинаковыми данными, но уникальным ID
 func generateOrder() *model.Order {
+    orderID := fmt.Sprintf("test-order-%d", time.Now().UnixNano()) // Уникальный ID на основе времени
     return &model.Order{
-        OrderUID:    fmt.Sprintf("test-order-%d", time.Now().UnixNano()), // Уникальный ID на основе времени
+        OrderUID:    orderID,
         TrackNumber: "WBILMTESTTRACK",
         Entry:      "WBIL",
         Delivery: model.Delivery{
@@ -27,7 +28,7 @@ func generateOrder() *model.Order {
             Email:   "test@gmail.com",
         },
         Payment: model.Payment{
-            Transaction:  "b563feb7b2b84b6test",
+            Transaction:  fmt.Sprintf("b563feb7b2b84b6test-%d", time.Now().UnixNano()), // Делаем транзакцию уникальной
             RequestID:    "",
             Currency:    "USD",
             Provider:    "wbpay",

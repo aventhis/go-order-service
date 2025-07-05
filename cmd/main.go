@@ -29,7 +29,7 @@ func main() {
 	defer database.Close()
 
 	// Применяем миграции
-	db.RunMigrations(database, "migrations")
+	db.RunMigrations(database, "/app/migrations")
 
 	// Создаем репозиторий
     repo := repository.NewOrderRepository(database)

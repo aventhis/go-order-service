@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/aventhis/go-order-service/internal/model"
 	"github.com/jmoiron/sqlx"
+	"log"
 )
 
 type OrderRepository interface {
@@ -86,16 +87,18 @@ func (r *OrderRepo) Create(order *model.Order) error {
 func (r *OrderRepo) GetByID(orderUID string) (*model.Order, error) {
 	order := &model.Order{}
 
-	  // Получаем основную информацию о заказе
+	// Получаем основную информацию о заказе
 	err := r.db.Get(order, `
-		SELECT * FROM orders WHERE order_uid = $1`, orderUID)
+		SELECT order_uid, track_number, entry, locale, internal_signature,
+			customer_id, delivery_service, shardkey, sm_id, date_created, oof_shard
+		FROM orders WHERE order_uid = $1`, orderUID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Получаем информацию о доставке
 	err = r.db.Get(&order.Delivery, `
-		SELECT name, phone, zip, city, address, region, email 
+		SELECT name, phone, zip, city, address, region, email
 		FROM delivery WHERE order_uid = $1`, orderUID)
 	if err != nil {
 		return nil, err
@@ -104,41 +107,61 @@ func (r *OrderRepo) GetByID(orderUID string) (*model.Order, error) {
 	// Получаем информацию об оплате
 	err = r.db.Get(&order.Payment, `
 		SELECT transaction, request_id, currency, provider, amount,
-				payment_dt, bank, delivery_cost, goods_total, custom_fee
+			payment_dt, bank, delivery_cost, goods_total, custom_fee
 		FROM payment WHERE order_uid = $1`, orderUID)
 	if err != nil {
 		return nil, err
 	}
 
-  // Получаем информацию о товарах
-  err = r.db.Select(&order.Items, `
-	  SELECT chrt_id, track_number, price, rid, name, sale,
-			 size, total_price, nm_id, brand, status
-	  FROM items WHERE order_uid = $1`, orderUID)
-  if err != nil {
-	  return nil, err
-  }
+	// Получаем информацию о товарах
+	err = r.db.Select(&order.Items, `
+		SELECT chrt_id, track_number, price, rid, name, sale,
+			size, total_price, nm_id, brand, status
+		FROM items WHERE order_uid = $1`, orderUID)
+	if err != nil {
+		return nil, err
+	}
 
-  return order, nil
+	return order, nil
 }
 
 func (r *OrderRepo) GetAll() ([]*model.Order, error) {
     // Получаем все order_uid
-    var orderUIDs []string
-    err := r.db.Select(&orderUIDs, `SELECT order_uid FROM orders`)
+    var orders []*model.Order
+    err := r.db.Select(&orders, `SELECT * FROM orders`)
     if err != nil {
         return nil, err
     }
 
-    // Получаем полную информацию для каждого заказа
-    orders := make([]*model.Order, 0, len(orderUIDs))
-    for _, uid := range orderUIDs {
-        order, err := r.GetByID(uid)
+    // Для каждого заказа получаем связанные данные
+    for _, order := range orders {
+        // Получаем информацию о доставке
+        err = r.db.Get(&order.Delivery, `
+            SELECT name, phone, zip, city, address, region, email
+            FROM delivery WHERE order_uid = $1`, order.OrderUID)
         if err != nil {
             return nil, err
         }
-        orders = append(orders, order)
+
+        // Получаем информацию об оплате
+        err = r.db.Get(&order.Payment, `
+            SELECT transaction, request_id, currency, provider, amount,
+                payment_dt, bank, delivery_cost, goods_total, custom_fee
+            FROM payment WHERE order_uid = $1`, order.OrderUID)
+        if err != nil {
+            return nil, err
+        }
+
+        // Получаем информацию о товарах
+        err = r.db.Select(&order.Items, `
+            SELECT chrt_id, track_number, price, rid, name, sale,
+                size, total_price, nm_id, brand, status
+            FROM items WHERE order_uid = $1`, order.OrderUID)
+        if err != nil {
+            return nil, err
+        }
     }
 
+    log.Printf("Found %d orders in database", len(orders))
     return orders, nil
 }

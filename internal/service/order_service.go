@@ -1,12 +1,14 @@
 package service
 
 import (
-    "github.com/aventhis/go-order-service/internal/config"
     "github.com/aventhis/go-order-service/internal/model"
     "github.com/aventhis/go-order-service/internal/repository"
     "log"
     "sync"
 )
+
+// Compile-time interface check
+var _ OrderServiceInterface = (*OrderService)(nil)
 
 type OrderService struct {
     repo  repository.OrderRepository

@@ -42,20 +42,20 @@ services:
       dockerfile: Dockerfile
     container_name: order-service
     ports:
-      - "${APP_PORT:-8081}:8081"
+      - "${APP_PORT}:8081"
     depends_on:
       db:
         condition: service_healthy
       kafka:
         condition: service_started
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - DB_SSL_MODE=${DB_SSL_MODE}
-      - KAFKA_BROKERS=kafka:29092
+      - KAFKA_BROKERS=${KAFKA_BROKERS}
       - APP_ENV=${APP_ENV}
     restart: unless-stopped
 
@@ -68,9 +68,9 @@ services:
       kafka:
         condition: service_started
     environment:
-      - KAFKA_BROKERS=kafka:29092
-      - KAFKA_TOPIC=orders
-      - PRODUCER_INTERVAL=5
+      - KAFKA_BROKERS=${KAFKA_BROKERS}
+      - KAFKA_TOPIC=${KAFKA_TOPIC}
+      - PRODUCER_INTERVAL=${PRODUCER_INTERVAL}
     restart: unless-stopped
 
 volumes:
